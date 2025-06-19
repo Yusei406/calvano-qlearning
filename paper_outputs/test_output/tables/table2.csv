@@ -1,0 +1,5 @@
+Profit Type,Value,Raw_Mean,Raw_SE
+Mean Realized Profit,0.250 ± 0.010,0.25,0.01
+Monopoly Benchmark,—,,0.01
+Competitive Benchmark,—,,0.005
+Nash Benchmark,—,,0.01
