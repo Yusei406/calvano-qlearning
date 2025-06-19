@@ -26,13 +26,13 @@ jobs:
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 src/ bin/ tests/ paper_outputs/ experiments/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 src/ bin/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 src/ bin/ tests/ paper_outputs/ experiments/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 src/ bin/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     
     - name: Check code formatting with black
       run: |
-        black --check --diff src/ bin/ tests/ paper_outputs/ experiments/
+        black --check --diff src/ bin/ tests/
 
   unit-tests:
     runs-on: ubuntu-latest
@@ -51,8 +51,8 @@ jobs:
     
     - name: Run unit tests
       run: |
-        cd python_implementation
-        python run_test.py
+        
+        python -m pytest tests/ -v
 
   cli-basic:
     runs-on: ubuntu-latest
@@ -71,7 +71,7 @@ jobs:
     
     - name: Test CLI commands
       run: |
-        cd python_implementation
+        
         python bin/calvano.py --help
         python bin/calvano.py run --help
         python bin/calvano.py analyse --help
@@ -99,7 +99,7 @@ jobs:
     
     - name: Run full simulation
       run: |
-        cd python_implementation
+        
         python bin/calvano.py run --config tests/ci_small.json --mode full
 
   paper-parity:
@@ -120,7 +120,7 @@ jobs:
     
     - name: Generate test data with paper values
       run: |
-        cd python_implementation
+        
         mkdir -p test_output
         echo '{
           "nash_price": 0.500,
@@ -131,17 +131,17 @@ jobs:
     
     - name: Test paper parity CLI
       run: |
-        cd python_implementation
+        
         python bin/calvano.py benchmark-paper --results test_output/summary.json --eps 1e-3
     
     - name: Run paper parity unit tests
       run: |
-        cd python_implementation
+        
         python -m pytest tests/test_paper_parity.py -v
     
     - name: Integration test - CLI generates data and validates
       run: |
-        cd python_implementation
+        
         python bin/calvano.py run --config tests/ci_small.json --mode full
         
         # Find the most recent run directory
@@ -185,18 +185,18 @@ jobs:
     
     - name: Generate simulation data
       run: |
-        cd python_implementation
+        
         python bin/calvano.py run --config tests/ci_small.json --mode full
     
     - name: Generate paper outputs
       run: |
-        cd python_implementation
+        
         LATEST_RUN=$(ls -1dt runs/* | head -1)
         python bin/calvano.py paper --logdir "$LATEST_RUN" --skip-analysis
     
     - name: Build PDF from LaTeX tables
       run: |
-        cd python_implementation
+        
         LATEST_OUTPUT=$(ls -1dt paper_outputs/* | head -1)
         if [ -d "$LATEST_OUTPUT/tables" ]; then
           echo "✅ Found tables directory: $LATEST_OUTPUT/tables"
@@ -273,7 +273,7 @@ jobs:
     
     - name: Run parameter sweep smoke test
       run: |
-        cd python_implementation
+        
         timeout 300 python bin/calvano.py sweep --grid tests/mini_grid.json --njobs 2 || {
           echo "Sweep timed out or failed - this is expected for smoke test"
           exit 0
