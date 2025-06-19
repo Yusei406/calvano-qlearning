@@ -178,7 +178,9 @@ jobs:
           latexmk \
           texlive-latex-extra \
           texlive-fonts-recommended \
-          texlive-latex-recommended
+          texlive-latex-recommended \
+          texlive-science \
+          texlive-plain-generic
     
     - name: Install Python dependencies
       run: |

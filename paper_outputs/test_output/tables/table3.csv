@@ -1,6 +1,0 @@
-Parameter,Value,Effect on Convergence
-Learning Rate (α),0.150,Higher α → Faster learning
-Discount Factor (δ),0.950,Higher δ → More forward-looking
-Exploration Rate (ε),0.050,Higher ε → More exploration
-Number of Actions,11,More actions → Larger strategy space
-Memory Parameter (μ),0.900,Higher μ → Longer memory
