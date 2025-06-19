@@ -4,8 +4,12 @@ Analyzes how the system responds to price shocks.
 """
 
 import numpy as np
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Tuple, Optional, Union, TYPE_CHECKING, Any
 from dataclasses import dataclass
+
+if TYPE_CHECKING:
+    import pandas as pd
+
 # Handle imports for both package and standalone usage
 try:
     from ..dtype_policy import DTYPE, array, zeros
@@ -260,7 +264,7 @@ def find_optimal_shock_time(
 
 
 def simulate_impulse(params, shock_price: float, shock_agent: int, 
-                    shock_duration: int = 1, steps: int = 50) -> 'pd.DataFrame':
+                    shock_duration: int = 1, steps: int = 50) -> Any:
     """
     Simulate impulse response with price shock.
     
