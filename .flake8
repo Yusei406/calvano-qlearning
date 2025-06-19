@@ -1,0 +1,2 @@
+[flake8]
+per-file-ignores = src/worker.py:F824
