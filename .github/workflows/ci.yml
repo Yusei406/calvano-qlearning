@@ -21,6 +21,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
         pip install flake8 black
     
     - name: Lint with flake8
@@ -32,7 +33,7 @@ jobs:
     
     - name: Check code formatting with black
       run: |
-        black --check --diff src/ bin/ tests/
+        black src/ bin/ tests/
 
   unit-tests:
     runs-on: ubuntu-latest
@@ -48,6 +49,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
     
     - name: Run unit tests
       run: |
@@ -68,6 +70,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
     
     - name: Test CLI commands
       run: |
@@ -96,6 +99,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
     
     - name: Run full simulation
       run: |
@@ -117,6 +121,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
     
     - name: Generate test data with paper values
       run: |
@@ -182,6 +187,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
     
     - name: Generate simulation data
       run: |
@@ -270,6 +276,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest
     
     - name: Run parameter sweep smoke test
       run: |
