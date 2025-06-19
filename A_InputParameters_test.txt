@@ -1,0 +1,52 @@
+# Number of agents
+2
+
+# Number of prices in the grid
+11
+
+# Depth of state
+1
+
+# Discount factor
+0.95
+
+# Learning rate
+0.1
+
+# Exploration parameter
+1.0
+
+# Demand parameters
+# Linear demand model
+0.5
+
+# Logit demand model
+1.0 2.0 0.5 0.1
+
+# Number of sessions
+10
+
+# Number of iterations per episode
+1000
+
+# Number of iterations in perfect measurement period
+100
+
+# Maximum number of iterations
+100000
+
+# Type of exploration mechanism (1: Greedy, 2: Boltzmann)
+1
+
+# Number of cores for parallel processing
+4
+
+# Experiment number
+1
+
+# Type of Q initialization (1: Random, 2: Nash, 3: Cooperative)
+1
+
+# Parameters for Q initialization
+0.0 0.0
+0.0 0.0 
