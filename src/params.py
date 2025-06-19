@@ -8,48 +8,57 @@ import numpy as np
 
 
 class SimParams:
-    """Simulation parameters container."""
+    """Simulation parameters container with backward compatibility."""
     
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, *args, **kwargs):
         """
-        Initialize parameters from configuration dictionary.
+        Initialize parameters from configuration dictionary or individual keywords.
         
         Args:
-            config: Configuration dictionary with parameter values
+            *args: Positional arguments (first can be config dict)
+            **kwargs: Individual parameter values
         """
-        if config is None:
-            config = {}
+        # Handle dict input (new API)
+        if len(args) == 1 and isinstance(args[0], dict):
+            config = args[0]
+            kwargs.update(config)
         
         # Set defaults first
-        self.n_agents = 2
-        self.n_actions = 11
-        self.n_states = 121
-        self.n_runs = 50
-        self.max_episodes = 2000
-        self.alpha = 0.1
-        self.delta = 0.95
-        self.epsilon = 0.1
-        self.lambda_param = 0.5
-        self.a_param = 1.0
-        self.demand_model = "logit"
-        self.rng_seed = 42
-        self.q_init_strategy = "R"
-        self.conv_window = 1000
-        self.conv_tolerance = 1e-4
-        self.save_q_tables = False
-        self.save_detailed_logs = True
+        self.n_agents = kwargs.pop('n_agents', 2)
+        self.n_actions = kwargs.pop('n_actions', 11) 
+        self.n_prices = kwargs.pop('n_prices', 11)  # For backward compatibility
+        self.n_states = kwargs.pop('n_states', 121)
+        self.state_depth = kwargs.pop('state_depth', 1)
+        self.q_strategy = kwargs.pop('q_strategy', "R")
         
-        # Override with config values
-        for key, value in config.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
+        # Additional parameters for backward compatibility
+        self.n_runs = kwargs.pop('n_runs', 50)
+        self.max_episodes = kwargs.pop('max_episodes', 2000)
+        self.alpha = kwargs.pop('alpha', 0.1)
+        self.delta = kwargs.pop('delta', 0.95)
+        self.epsilon = kwargs.pop('epsilon', 0.1)
+        self.lambda_param = kwargs.pop('lambda_param', 0.5)
+        self.a_param = kwargs.pop('a_param', 1.0)
+        self.demand_model = kwargs.pop('demand_model', "logit")
+        self.rng_seed = kwargs.pop('rng_seed', 42)
+        self.q_init_strategy = kwargs.pop('q_init_strategy', "R")
+        self.conv_window = kwargs.pop('conv_window', 1000)
+        self.conv_tolerance = kwargs.pop('conv_tolerance', 1e-4)
+        self.save_q_tables = kwargs.pop('save_q_tables', False)
+        self.save_detailed_logs = kwargs.pop('save_detailed_logs', True)
+        
+        # Store any extra parameters
+        self.extra = kwargs
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert parameters to dictionary."""
         return {
             'n_agents': self.n_agents,
             'n_actions': self.n_actions,
+            'n_prices': self.n_prices,
             'n_states': self.n_states,
+            'state_depth': self.state_depth,
+            'q_strategy': self.q_strategy,
             'n_runs': self.n_runs,
             'max_episodes': self.max_episodes,
             'alpha': self.alpha,
@@ -63,7 +72,8 @@ class SimParams:
             'conv_window': self.conv_window,
             'conv_tolerance': self.conv_tolerance,
             'save_q_tables': self.save_q_tables,
-            'save_detailed_logs': self.save_detailed_logs
+            'save_detailed_logs': self.save_detailed_logs,
+            **self.extra
         }
 
 

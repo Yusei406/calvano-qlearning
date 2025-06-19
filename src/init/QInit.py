@@ -249,8 +249,9 @@ def validate_Q_matrix(Q: np.ndarray, params: SimParams) -> bool:
     if Q.shape != expected_shape:
         raise ValueError(f"Q matrix shape {Q.shape} does not match expected {expected_shape}")
     
-    if not np.isfinite(Q).all():
-        raise ValueError("Q matrix contains non-finite values")
+    # Allow -inf values (used by fixed strategy) but not +inf or NaN
+    if np.isnan(Q).any() or np.isposinf(Q).any():
+        raise ValueError("Q matrix contains NaN or +inf values")
     
     if Q.dtype != np.float64:
         raise ValueError(f"Q matrix dtype {Q.dtype} should be float64")

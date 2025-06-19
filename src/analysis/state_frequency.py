@@ -189,14 +189,15 @@ def state_index_to_prices(state_index: int, price_grid: np.ndarray, n_agents: in
     return prices
 
 
-def detect_cycles(price_hist: np.ndarray, max_period: int = 10, min_occurrences: int = 2) -> Dict[int, int]:
+def detect_cycles(price_hist: np.ndarray, max_period: int = 5, min_occurrences: int = 2, tol: float = 1e-4) -> Dict[int, int]:
     """
-    Detect periodic patterns in price history.
+    Detect periodic patterns in price history using array comparison.
     
     Args:
         price_hist: Price history array of shape (time_steps, n_agents)
         max_period: Maximum cycle period to search for
         min_occurrences: Minimum number of cycle occurrences to count
+        tol: Tolerance for numerical comparison
         
     Returns:
         Dictionary mapping cycle periods to occurrence counts
@@ -204,27 +205,27 @@ def detect_cycles(price_hist: np.ndarray, max_period: int = 10, min_occurrences:
     if len(price_hist) < 2 * max_period:
         return {}
     
-    cycle_counts = defaultdict(int)
-    
-    # Convert price history to string sequence for pattern matching
-    # Round prices to avoid floating point precision issues
-    if len(price_hist.shape) == 1:
-        # Single agent
-        price_sequence = [round(p, 4) for p in price_hist]
-    else:
-        # Multiple agents - create tuple sequence
-        price_sequence = [tuple(round(p, 4) for p in price_hist[t, :]) for t in range(len(price_hist))]
+    cycle_counts = {}
     
     # Search for cycles of different periods
     for period in range(1, max_period + 1):
-        cycle_occurrences = find_cycles_of_period(price_sequence, period)
+        occurrences = 0
         
-        # Only count cycles that occur multiple times
-        for cycle_pattern, count in cycle_occurrences.items():
-            if count >= min_occurrences:
-                cycle_counts[period] += count
+        # Check sliding windows for repeating patterns
+        for start in range(len(price_hist) - 2 * period + 1):
+            # Extract potential cycle pattern
+            pattern1 = price_hist[start:start + period]
+            pattern2 = price_hist[start + period:start + 2 * period]
+            
+            # Check if patterns match within tolerance
+            if np.allclose(pattern1, pattern2, atol=tol):
+                occurrences += 1
+        
+        # Only count if minimum occurrences met
+        if occurrences >= min_occurrences:
+            cycle_counts[period] = occurrences
     
-    return dict(cycle_counts)
+    return cycle_counts
 
 
 def find_cycles_of_period(sequence: List, period: int) -> Dict[Tuple, int]:

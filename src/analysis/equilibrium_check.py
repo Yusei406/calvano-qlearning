@@ -52,7 +52,7 @@ except ImportError:
         # Fallback for testing
         import numpy as np
 
-from ..analysis.profit_gain import compute_demands_from_prices, calc_profit_vector, zeros
+from .profit_gain import compute_demands_from_prices, calc_profit_vector, zeros
 
 
 def check_nash(price_pair: Union[List[float], np.ndarray], params: SimParams, 

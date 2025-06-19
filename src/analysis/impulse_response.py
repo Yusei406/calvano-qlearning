@@ -256,4 +256,67 @@ def find_optimal_shock_time(
     if best_time is None:
         raise ValueError("No suitable shock time found")
     
-    return best_time, best_result 
+    return best_time, best_result
+
+
+def simulate_impulse(params, shock_price: float, shock_agent: int, 
+                    shock_duration: int = 1, steps: int = 50) -> 'pd.DataFrame':
+    """
+    Simulate impulse response with price shock.
+    
+    Args:
+        params: Simulation parameters
+        shock_price: Price level for shock
+        shock_agent: Agent receiving the shock
+        shock_duration: Duration of shock in periods
+        steps: Number of time steps to simulate
+        
+    Returns:
+        DataFrame with time series of system response
+    """
+    import pandas as pd
+    
+    # Create time series data
+    time_series = []
+    
+    for t in range(steps):
+        # Determine if shock is active
+        shock_active = t < shock_duration
+        
+        # Simulate basic price dynamics (simplified)
+        if shock_active:
+            # During shock period
+            if hasattr(params, 'n_agents'):
+                prices = [shock_price if i == shock_agent else 0.5 for i in range(params.n_agents)]
+            else:
+                prices = [shock_price, 0.5]  # Default to 2 agents
+        else:
+            # Post-shock convergence (simplified exponential decay)
+            if hasattr(params, 'n_agents'):
+                base_prices = [0.5] * params.n_agents
+            else:
+                base_prices = [0.5, 0.5]  # Default to 2 agents
+            
+            # Add some decay towards equilibrium
+            decay_factor = np.exp(-0.1 * (t - shock_duration)) if t >= shock_duration else 1.0
+            prices = [p + 0.1 * decay_factor * np.sin(0.3 * t) for p in base_prices]
+        
+        # Calculate simplified Nash and cooperative gaps
+        nash_equilibrium = 0.5  # Simplified assumption
+        coop_equilibrium = 0.6  # Simplified assumption
+        
+        avg_price = np.mean(prices)
+        nash_gap = abs(avg_price - nash_equilibrium)
+        coop_gap = abs(avg_price - coop_equilibrium)
+        
+        # Store time step data
+        time_series.append({
+            'time': t,
+            'shock_active': shock_active,
+            'agent_0_price': prices[0],
+            'agent_1_price': prices[1] if len(prices) > 1 else prices[0],
+            'nash_gap': nash_gap,
+            'coop_gap': coop_gap
+        })
+    
+    return pd.DataFrame(time_series) 

@@ -43,7 +43,7 @@ except ImportError:
         array = lambda x: np.array(x, dtype=DTYPE)
         zeros = lambda n: np.zeros(n, dtype=DTYPE)
 
-from ..analysis.profit_gain import compute_demands_from_prices, calc_profit
+from .profit_gain import compute_demands_from_prices, calc_profit
 
 
 def static_best_response(opponent_price: float, demand_func: Callable, cost: float = 0.0,

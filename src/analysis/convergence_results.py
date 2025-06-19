@@ -61,8 +61,9 @@ def aggregate_runs(run_logs: List[Dict]) -> ConvergenceStats:
     convergence_flags = [
         log.get('overall_converged', False) for log in run_logs
     ]
-    conv_rate = sum(convergence_flags) / len(convergence_flags)
-    
+    n_runs = len(run_logs)
+    conv_rate = sum(convergence_flags) / n_runs
+
     # Extract final prices and profits
     final_prices = []
     final_profits = []
@@ -70,7 +71,7 @@ def aggregate_runs(run_logs: List[Dict]) -> ConvergenceStats:
     coop_distances = []
     convergence_times = []
     volatilities = []
-    
+
     for log in run_logs:
         if 'final_prices' in log:
             final_prices.append(log['final_prices'])
@@ -89,34 +90,46 @@ def aggregate_runs(run_logs: List[Dict]) -> ConvergenceStats:
         
         if 'final_volatility' in log:
             volatilities.append(log['final_volatility'])
-    
+
     # Calculate statistics
     if final_prices:
-        final_prices = np.array(final_prices)
-        mean_price = array(np.mean(final_prices, axis=0))
-        std_price = array(np.std(final_prices, axis=0))
+        # Convert to numpy array if list of arrays
+        if isinstance(final_prices[0], (list, np.ndarray)):
+            final_prices = np.array(final_prices)
+            mean_price = array(np.mean(final_prices, axis=0))
+            std_price = array(np.std(final_prices, axis=0))
+        else:
+            # Handle single values
+            mean_price = array([np.mean(final_prices)])
+            std_price = array([np.std(final_prices)])
     else:
         mean_price = array([])
         std_price = array([])
-    
+
     if final_profits:
-        final_profits = np.array(final_profits)
-        mean_profit = array(np.mean(final_profits, axis=0))
-        std_profit = array(np.std(final_profits, axis=0))
+        # Convert to numpy array if list of arrays  
+        if isinstance(final_profits[0], (list, np.ndarray)):
+            final_profits = np.array(final_profits)
+            mean_profit = array(np.mean(final_profits, axis=0))
+            std_profit = array(np.std(final_profits, axis=0))
+        else:
+            # Handle single values
+            mean_profit = array([np.mean(final_profits)])
+            std_profit = array([np.std(final_profits)])
     else:
         mean_profit = array([])
         std_profit = array([])
-    
+
     # Average distances
     nash_gap = np.mean(nash_distances) if nash_distances else float('inf')
     coop_gap = np.mean(coop_distances) if coop_distances else float('inf')
-    
+
     # Average convergence time and volatility
     avg_conv_time = np.mean(convergence_times) if convergence_times else None
     avg_volatility = np.mean(volatilities) if volatilities else None
-    
+
     return ConvergenceStats(
-        n_runs=len(run_logs),
+        n_runs=n_runs,
         conv_rate=conv_rate,
         mean_price=mean_price,
         std_price=std_price,
