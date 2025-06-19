@@ -171,17 +171,13 @@ jobs:
       with:
         python-version: '3.10'
     
-    - name: Install TeX Live
-      uses: teatimeguest/setup-texlive-action@v2
-      with:
-        packages: >-
-          collection-latexrecommended
-          collection-fontsrecommended
-          latexmk
-          booktabs
-          array
-          longtable
-          multirow
+    - name: Install TeX Live (minimal)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          texlive-latex-extra \
+          texlive-fonts-recommended \
+          texlive-latex-recommended
     
     - name: Install Python dependencies
       run: |
