@@ -203,7 +203,3 @@ def get_global_raw_rng() -> LecuyerCombined:
         # Default initialization
         set_global_rng(12345, 0)
     return _thread_local.raw_rng 
-# Thread-local accessors
-
-get_global_rng = lambda: (_thread_local.rng if hasattr(_thread_local, "rng") else (_thread_local.__setattr__("rng", np.random.default_rng(12345)), _thread_local.rng)[-1])
-get_global_raw_rng = lambda: (_thread_local.raw_rng if hasattr(_thread_local, "raw_rng") else (set_global_rng(12345,0), _thread_local.raw_rng)[-1])
