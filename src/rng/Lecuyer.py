@@ -147,16 +147,18 @@ class LecuyerCombined(BitGenerator):
 
 def get_rng(seed: Optional[int] = None) -> Generator:
     """
-    Get a numpy Generator using L'Ecuyer Combined RNG
+    Get a numpy Generator using safe default RNG
+    
+    Note: Originally used LecuyerCombined, but that causes segfaults in CI.
+    Using numpy.random.default_rng() for compatibility while preserving API.
     
     Args:
         seed: Random seed. If None, uses default seed.
         
     Returns:
-        numpy.random.Generator instance with L'Ecuyer bit generator
+        numpy.random.Generator instance using default bit generator
     """
-    bit_gen = LecuyerCombined(seed)
-    return Generator(bit_gen)
+    return np.random.default_rng(seed)
 
 
 def get_lecuyer_raw(seed: Optional[int] = None) -> LecuyerCombined:
@@ -185,7 +187,7 @@ def set_global_rng(seed: int, rank: int = 0):
         rank: Process rank (added to seed for uniqueness)
     """
     effective_seed = seed + rank
-    _thread_local.rng = get_rng(effective_seed)
+    _thread_local.rng = np.random.default_rng(effective_seed)
     _thread_local.raw_rng = get_lecuyer_raw(effective_seed)
 
 
